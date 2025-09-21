@@ -12,9 +12,14 @@ resource "azurerm_resource_group" "main1" {
   name     = var.az_rg_west
 }
 
-
+resource "azurerm_resource_group" "main2" {
+  location = var.az_rg_location-asia
+  name     = var.az_rg_asia
+}
 # To import the virtual network 'main':
 # terraform import azurerm_virtual_network.main /subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/virtualNetworks/{vnet_name}
+
+
 resource "azurerm_virtual_network" "main" {
   name                           = "az_vnet_east"
   location                       = var.az_rg_location-east
@@ -34,6 +39,16 @@ resource "azurerm_virtual_network" "main1" {
 
 }
 
+# To import the virtual network 'main1':
+# terraform import azurerm_virtual_network.main1 /subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/virtualNetworks/{vnet_name}
+resource "azurerm_virtual_network" "main2" {
+  name                           = "az_vnet_asia"
+  location                       = var.az_rg_location-asia
+  resource_group_name            = var.az_rg_asia
+  address_space                  = ["10.12.0.0/16"]
+  dns_servers                    = ["10.12.0.100", "10.12.0.101"]
+
+}
 # To import the network interface 'main':
 # terraform import azurerm_network_interface.main /subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/networkInterfaces/{nic_name}
 resource "azurerm_network_interface" "main" {
@@ -59,7 +74,19 @@ resource "azurerm_network_interface" "main1" {
     private_ip_address_allocation = "Dynamic"
   }
 }
-
+# To import the network interface 'main2':
+# terraform import azurerm_network_interface.main1 /subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/networkInterfaces/{nic_name}
+resource "azurerm_network_interface" "main2" {
+  name                = "test-nic-asia"
+  location            = "south india"
+  resource_group_name = var.az_rg_asia
+  
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = azurerm_subnet.main2.id
+    private_ip_address_allocation = "Dynamic"
+  }
+}
 # To import the subnet 'main':
 # terraform import azurerm_subnet.main "/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/virtualNetworks/{vnet_name}/subnets/{subnet_name}"
 resource "azurerm_subnet" "main" {
@@ -83,5 +110,17 @@ resource "azurerm_subnet" "main1" {
 }
 
 output "subnet_id_west" {
+    value = "255.255.255.0"
+}
+# To import the subnet 'main':
+# terraform import azurerm_subnet.main "/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/virtualNetworks/{vnet_name}/subnets/{subnet_name}"
+resource "azurerm_subnet" "main2" {
+  name                 = "az_subnet_asia"
+  resource_group_name  = var.az_rg_asia
+  virtual_network_name = azurerm_virtual_network.main2.name
+  address_prefixes     = ["10.12.1.0/24"]
+}
+
+output "subnet_id_asia" {
     value = "255.255.255.0"
 }
