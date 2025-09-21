@@ -10,7 +10,7 @@ resource "azurerm_windows_virtual_machine" "main" {
   os_disk {
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
-    name                 = "winvm-osdisk"
+    name                 = "winvm-osdisk-east"
   }
 
   source_image_reference {
@@ -32,7 +32,7 @@ resource "azurerm_windows_virtual_machine" "main1" {
   os_disk {
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
-    name                 = "winvm-osdisk"
+    name                 = "winvm-osdisk-west"
   }
 
   source_image_reference {
